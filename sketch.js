@@ -1,59 +1,112 @@
 //Create variables here
-var dog,dogimg,happydogimg,database,foods,foodstock
-var database
+var dog,dog1,happyDog;
+var database,foodS,foodStock,foodimage,add,feed;
+
+
+
+
 function preload()
 {
-  //load images here
-  happydogimg = loadImage("dogImg.png")
-  dogimg = loadImage("dogImg1.png")
+	//load images here
+  dog1 = loadImage("images/dogImg.png");
+  happyDog = loadImage("images/dogImg1.png");
+  
 }
+
+
+
 
 function setup() {
-  createCanvas(700, 600);
-  database = firebase.database()
-  dog = createSprite(300,300)
-  dog.addImage("dog",dogimg)
-  dog.scale = 0.5
-  foodstock = database.ref('Food')
-  foodstock.on("value",readStock)
+	createCanvas(500, 500);
+
+  dog = createSprite(250,380);
+  dog.addImage(dog1);
+  dog.scale = 0.2;
+
+  database = firebase.database();
+  foodStock = database.ref("food");
+  foodStock.on("value",readStock);
+
+  add = createButton("ADD FOOD");
+  add.position(750,184);
+  add.mousePressed(addStock);
+
+  foodimage = new food();
+
+  feed = createButton("FEED");
+  feed.position(630,184);
+  feed.mousePressed(deductStock);
 }
 
-function readStock(data){
-  foods = data.val()
-}
 
-//Function to write values in DB
-function writeStock(x){
-  if(x <= 0){
-    x = 0
+
+
+
+function draw() { 
+  if(foodS === undefined && frameCount >60){
+    textSize(30);
+    text("Reload the page",10,50);
   }
-  else{
-    x = x - 1 
-  }
-  database.ref('/').update(
-    {
-      Food:x
-    }
-  )
-}
-
-function draw() {  
+  
+   
+  if(foodS != undefined){
   background(46,139,87);
 
-  //Function to read values from DB
-  if(keyWentDown(UP_ARROW)){
-    writeStock(foods)
-    dog.addImage("dog",happydogimg)
-  } 
-  fill("black")
-  textSize(30)
-  text("Food Available:" + foods,200,500)
-  drawSprites();
+drawSprites();
   //add styles here
-  fill("black")
-  textSize(30)
-  text("Press the Up arrow to feed the Dog",100,100)
+
+  fill(255);
+  textSize(25);
+  stroke(255,0,0);
+  text("Bottles remaining: "+foodS,10,150);
+  fill(11,230,219);
+  textSize(20);
+  noStroke();
+  text("Note: Even if you reload the site or open this site",10,50);
+  text("later on, the number of bottles remains the same!!!",10,80);
+  foodimage.display();
+  }
 }
 
 
 
+
+
+function readStock(data){
+
+foodS = data.val();
+foodimage.getStock(foodS);
+}
+
+
+
+
+function deductStock(){
+
+  if(foodS<= 0.1){
+    foodS = 0;
+  } else if(foodS>=0){
+    foodS = foodS-1;
+  }
+  dog.addImage(happyDog);
+
+  database.ref("/").update({
+    food: foodS
+  })
+}
+
+
+
+
+
+function addStock(){
+
+  if(foodS>=0 && foodS<20){
+    foodS = foodS+1;
+  }
+  
+dog.addImage(dog1);
+  database.ref("/").update({
+    food: foodS
+  })
+}
