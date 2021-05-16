@@ -1,16 +1,20 @@
 class food{
     constructor(){
+        var lastFed,foodStock;
         this.stock = 0;
         this.image = loadImage("images/food.png");
     }
 
-    getStock(n){
-        this.stock = n;
+    getFoodStock(){
+        this.stock = foodS;
     }
+
+
+    
 
     display(){
         var x=30;
-        var y=120;
+        var y=180;
 
         if(this.stock != 0){
         for(var i=0;i<this.stock;i++){
