@@ -18,14 +18,24 @@ class Form{
         var button = createButton("Next");
         button.position(400,350);
 
+        
+
         button.mousePressed(function(){
             name1 = input2.value();
             name2 = input.value();
+            if(name2!="Name" && name1!="Pet's Name"){
             button.hide();
             title.hide();
             input.hide();
             title2.hide();
             input2.hide();
+            game.update(1);
+            
+            } else{
+                textSize(30);
+                fill("red");
+                text("Please change the names",100,30);
+            }
         });
     }
 }

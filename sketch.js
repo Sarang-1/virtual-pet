@@ -3,15 +3,23 @@ var dog,dog1,happyDog;
 var database,foodS,foodStock,add,feed;
 var fedTime,lastFed,foodObj;
 var form,name1,name2,bottle,img;
+var bedroom,washroom,garden,gameState=0;
+var game,lazy,menu,bedb,gardenb,washb,feedb,currentTime;
 
 
 
 function preload()
 {
 	//load images here
-  dog1 = loadImage("images/dogImg.png");
-  happyDog = loadImage("images/dogImg1.png");
-  img = loadImage("images/food.png");
+  dog1 = loadImage("images/Dog.png");
+  happyDog = loadImage("images/Happy.png");
+  lazy = loadImage("images/Lazy.png");
+  img = loadImage("images/milk.png");
+
+  bedroom = loadImage("images/Bed Room.png");
+  washroom = loadImage("images/Wash Room.png");
+  garden = loadImage("images/Garden.png");
+
 }
 
 
@@ -38,6 +46,39 @@ function setup() {
 
   form = new Form();
   form.display();
+
+  game = new Game();
+  game.getState();
+
+  add = createButton("ADD FOOD");
+  add.position(800,201);
+  add.mousePressed(addFood);
+  add.hide();
+
+  feed = createButton("FEED DOG");
+  feed.position(630,201);
+  feed.mousePressed(feedDog);
+  feed.hide();
+
+  
+  
+  bedb = createButton("Bedroom");
+  bedb.position(500,40-10);
+  bedb.hide();
+
+  gardenb = createButton("Garden");
+  gardenb.position(500,70);
+  gardenb.hide();
+
+  washb = createButton("Washroom");
+  washb.position(500,110);
+  washb.hide();
+
+  feedb = createButton("Kitchen");
+  feedb.position(500,150);
+  feedb.hide();
+
+  currentTime = hour();
 }
 
 
@@ -46,22 +87,18 @@ function setup() {
 
 function draw() { 
  
+  
 
   lastFed = database.ref("lastFed");
   lastFed.on("value",function(data){
     lastFed=data.val();
   });
    
-  if(foodS != undefined && name1 != undefined){
+  if(gameState != 0){
   background(46,139,87);
-
-  add = createButton("ADD FOOD");
-  add.position(800,201);
-  add.mousePressed(addFood);
-
-  feed = createButton("FEED "+name1);
-  feed.position(630,201);
-  feed.mousePressed(feedDog);
+  
+  menu = createButton("Take "+name1+" to");
+  menu.position(390,50);
   
 
 drawSprites();
@@ -85,21 +122,100 @@ drawSprites();
   fill(11,230,219);
   textSize(20);
   noStroke();
-  text("Note: Even if you reload the site the number of bottles  ",10,30);
-  text("remains the same!!!",10,60);
+  
 
   textSize(30);
   fill("red");
   stroke(255,0,0);
   strokeWeight(1.5);
-  text(name1,width/2-50,550);
+  
   text("Your Pet: "+name1,300,120);
   text("Hello "+name2,20,120);
 
-  foodObj.display();
+
+  if(gameState === "hungry"){
+    foodObj.display();
+    dog.visible = true;
+    text(name1,width/2-50,550);
+
+    add.show();
+    feed.show();
+
+  } else {
+    add.hide();
+    feed.hide();
+    
+    dog.visible=false;
   }
+
+
+  
+  menu.mousePressed(function (){
+    
+    bedb.show();
+    gardenb.show();
+    washb.show();
+    feedb.show();
+    
+  });
+
+  bedb.mousePressed(function(){
+    bedb.hide();
+    gardenb.hide();
+    washb.hide();
+    feedb.hide();
+    currentTime = lastFed+2;
+    });
+
+    washb.mousePressed(function(){
+    bedb.hide();
+    gardenb.hide();
+    washb.hide();
+    feedb.hide();
+    currentTime = lastFed+3;
+    });
+
+    gardenb.mousePressed(function(){
+    bedb.hide();
+    gardenb.hide();
+    washb.hide();
+    feedb.hide();
+    currentTime = lastFed+1;
+    });
+
+    feedb.mousePressed(function(){
+    bedb.hide();
+    gardenb.hide();
+    washb.hide();
+    feedb.hide();
+    currentTime = lastFed+5;
+    });
+    
+    
+  if(currentTime==lastFed || currentTime==(lastFed+1)){
+    game.update("playing");
+    foodObj.playing();
+    text("Look how "+name1+" is playing!!",150,100);
+    
+  } else if(currentTime==lastFed+2){
+    game.update("sleeping");
+    foodObj.bedroom();
+    text(name1+" is Sleeping",200,100);
+
+  } else if(currentTime>lastFed+2&&currentTime<lastFed+4){
+    game.update("bathing");
+    foodObj.washroom();
+    text("Let "+name1+" bath",200,100)
+
+  } else {
+    game.update("hungry");
+
+  }
+  //menu.mousePressed();
+  
 }
 
+}
 
 
 
@@ -116,7 +232,8 @@ foodObj.getFoodStock();
 function feedDog(){
 
   bottle.visible = true;
-
+  add.hide();
+  feed.hide();
   dog.addImage(happyDog);
 
 if(foodS>0){
