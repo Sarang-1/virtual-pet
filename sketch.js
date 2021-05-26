@@ -4,7 +4,7 @@ var database,foodS,foodStock,add,feed;
 var fedTime,lastFed,foodObj;
 var form,name1,name2,bottle,img;
 var bedroom,washroom,garden,gameState=0;
-var game,lazy,menu,bedb,gardenb,washb,feedb,currentTime;
+var game,lazy,menu,bedb,gardenb,washb,feedb,currentTime,image1;
 
 
 
@@ -19,7 +19,7 @@ function preload()
   bedroom = loadImage("images/Bed Room.png");
   washroom = loadImage("images/Wash Room.png");
   garden = loadImage("images/Garden.png");
-
+  image1 = loadImage("images/bg.jpg");
 }
 
 
@@ -50,10 +50,7 @@ function setup() {
   game = new Game();
   game.getState();
 
-  add = createButton("ADD FOOD");
-  add.position(800,201);
-  add.mousePressed(addFood);
-  add.hide();
+  add = document.getElementById("abc");
 
   feed = createButton("FEED DOG");
   feed.position(630,201);
@@ -138,11 +135,11 @@ drawSprites();
     dog.visible = true;
     text(name1,width/2-50,550);
 
-    add.show();
+    add.style.display="inline-block";
     feed.show();
 
   } else {
-    add.hide();
+    add.style.display="none";
     feed.hide();
     
     dog.visible=false;
@@ -232,7 +229,7 @@ foodObj.getFoodStock();
 function feedDog(){
 
   bottle.visible = true;
-  add.hide();
+  add.style.display="none";
   feed.hide();
   dog.addImage(happyDog);
 
@@ -263,4 +260,8 @@ function addFood(){
   database.ref("/").update({
     food: foodS
   })
+}
+
+function goTo(){
+  open("https://sarang73.whjr.site/");
 }
